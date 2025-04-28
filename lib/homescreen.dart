@@ -52,61 +52,80 @@ class Homescreenpage extends StatelessWidget {
         onPressed: () {
           showModalBottomSheet(
             context: context,
+            isScrollControlled: true,
             builder: (context) {
-              return Container(
-                width: double.infinity,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Form(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Add Todo',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Title',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8.0),
+              return Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                ),
+                child: SingleChildScrollView(
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
+                      ),
+                    ),
+                    child: Form(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Add Todo',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ),
-                        SizedBox(height: 20),
-                        TextFormField(
-                          maxLines: 5,
-                          decoration: InputDecoration(
-                            labelText: 'Description',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8.0),
+                          SizedBox(height: 20),
+                          TextFormField(
+                            decoration: InputDecoration(
+                              labelText: 'Title',
+                              alignLabelWithHint: true,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              hintText: 'Enter a title',
                             ),
+                            style: TextStyle(fontSize: 16),
                           ),
-                        ),
-                        SizedBox(height: 20),
-                        Row(
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                // Handle form submission
-                              },
-                              child: Text('Add Todo'),
+                          SizedBox(height: 20),
+                          TextFormField(
+                            maxLines: 3,
+                            decoration: InputDecoration(
+                              labelText: 'Description',
+                              alignLabelWithHint: true,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              hintText: 'Enter a detailed description',
                             ),
-                            Spacer(),
-                            SizedBox(height: 20),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: Text('Cancel'),
-                            ),
-                          ],
-                        ),
-                      ],
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          SizedBox(height: 20),
+                          Row(
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  // Handle form submission
+                                },
+                                child: Text('Add Todo'),
+                              ),
+                              Spacer(),
+                              SizedBox(height: 20),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Text('Cancel'),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
