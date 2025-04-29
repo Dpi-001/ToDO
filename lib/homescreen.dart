@@ -1,8 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/model/todo.dart';
 
-class Homescreenpage extends StatelessWidget {
+class Homescreenpage extends StatefulWidget {
   Homescreenpage({super.key});
+
+  @override
+  State<Homescreenpage> createState() => _HomescreenpageState();
+}
+
+class _HomescreenpageState extends State<Homescreenpage> {
+  final GlobalKey<FormState> _todoformKey = GlobalKey();
+
+  String title = "";
+
+  String description = "";
 
   List<Todo> todos = [
     Todo(
@@ -30,6 +41,7 @@ class Homescreenpage extends StatelessWidget {
       isCompleted: false,
     ),
   ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,9 +50,21 @@ class Homescreenpage extends StatelessWidget {
       body: ListView.builder(
         itemBuilder: (ctx, i) {
           return ListTile(
+            trailing: IconButton(
+              onPressed: () {
+                setState(() {
+                  todos.remove(todos[i]);
+                });
+              },
+              icon: Icon(Icons.delete),
+            ),
             leading: Checkbox(
               value: todos[i].isCompleted,
-              onChanged: (value) {},
+              onChanged: (value) {
+                setState(() {
+                  todos[i].isCompleted = value!;
+                });
+              },
             ),
             title: Text(todos[i].title),
             subtitle: Text(todos[i].description),
@@ -70,6 +94,7 @@ class Homescreenpage extends StatelessWidget {
                       ),
                     ),
                     child: Form(
+                      key: _todoformKey,
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -90,10 +115,28 @@ class Homescreenpage extends StatelessWidget {
                               ),
                               hintText: 'Enter a title',
                             ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a title';
+                              } else {
+                                return null;
+                              }
+                            },
                             style: TextStyle(fontSize: 16),
+                            onSaved: (value) {
+                              title = value!;
+                            },
+                            onTapOutside:
+                                (event) => FocusScope.of(
+                                  context,
+                                ).requestFocus(FocusNode()),
                           ),
                           SizedBox(height: 20),
                           TextFormField(
+                            onTapOutside:
+                                (event) => FocusScope.of(
+                                  context,
+                                ).requestFocus(FocusNode()),
                             maxLines: 3,
                             decoration: InputDecoration(
                               labelText: 'Description',
@@ -103,6 +146,16 @@ class Homescreenpage extends StatelessWidget {
                               ),
                               hintText: 'Enter a detailed description',
                             ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a description';
+                              } else {
+                                return null;
+                              }
+                            },
+                            onSaved: (value) {
+                              description = value!;
+                            },
                             style: TextStyle(fontSize: 16),
                           ),
                           SizedBox(height: 20),
@@ -110,7 +163,21 @@ class Homescreenpage extends StatelessWidget {
                             children: [
                               ElevatedButton(
                                 onPressed: () {
-                                  // Handle form submission
+                                  if (!_todoformKey.currentState!.validate()) {
+                                    return;
+                                  }
+                                  _todoformKey.currentState!.save();
+                                  setState(() {
+                                    todos.add(
+                                      Todo(
+                                        id: todos.length.toString(),
+                                        title: title,
+                                        description: description,
+                                      ),
+                                    );
+                                  });
+
+                                  Navigator.pop(context);
                                 },
                                 child: Text('Add Todo'),
                               ),
