@@ -16,30 +16,30 @@ class _HomescreenpageState extends State<Homescreenpage> {
   String description = "";
 
   List<Todo> todos = [
-    Todo(
-      id: "1",
-      title: 'Buy groceries',
-      description: 'Milk, Bread, Eggs',
-      isCompleted: false,
-    ),
-    Todo(
-      id: "2",
-      title: 'Walk the dog',
-      description: 'Take the dog for a walk in the park',
-      isCompleted: false,
-    ),
-    Todo(
-      id: "3",
-      title: 'Read a book',
-      description: 'Finish reading the current book',
-      isCompleted: false,
-    ),
-    Todo(
-      id: "4",
-      title: 'Workout',
-      description: 'Go to the gym for a workout session',
-      isCompleted: false,
-    ),
+    // Todo(
+    //   id: "1",
+    //   title: 'Buy groceries',
+    //   description: 'Milk, Bread, Eggs',
+    //   isCompleted: false,
+    // ),
+    // Todo(
+    //   id: "2",
+    //   title: 'Walk the dog',
+    //   description: 'Take the dog for a walk in the park',
+    //   isCompleted: false,
+    // ),
+    // Todo(
+    //   id: "3",
+    //   title: 'Read a book',
+    //   description: 'Finish reading the current book',
+    //   isCompleted: false,
+    // ),
+    // Todo(
+    //   id: "4",
+    //   title: 'Workout',
+    //   description: 'Go to the gym for a workout session',
+    //   isCompleted: false,
+    // ),
   ];
 
   @override
@@ -47,31 +47,77 @@ class _HomescreenpageState extends State<Homescreenpage> {
     return Scaffold(
       appBar: AppBar(title: const Text('To Do')),
 
-      body: ListView.builder(
-        itemBuilder: (ctx, i) {
-          return ListTile(
-            trailing: IconButton(
-              onPressed: () {
-                setState(() {
-                  todos.remove(todos[i]);
-                });
-              },
-              icon: Icon(Icons.delete),
-            ),
-            leading: Checkbox(
-              value: todos[i].isCompleted,
-              onChanged: (value) {
-                setState(() {
-                  todos[i].isCompleted = value!;
-                });
-              },
-            ),
-            title: Text(todos[i].title),
-            subtitle: Text(todos[i].description),
-          );
-        },
-        itemCount: todos.length,
-      ),
+      body:
+          todos.isEmpty
+              ? Center(
+                child: Text(
+                  'No todos available',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              )
+              : ListView.builder(
+                itemBuilder: (ctx, i) {
+                  return ListTile(
+                    trailing: IconButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text('Delete Todo'),
+                              content: Text(
+                                'Are you sure you want to delete this todo?',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      todos.remove(todos[i]);
+                                    });
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        backgroundColor: Colors.red,
+                                        action: SnackBarAction(
+                                          label: 'Undo',
+                                          onPressed: () {},
+                                        ),
+                                        behavior: SnackBarBehavior.floating,
+
+                                        content: Text('Todo deleted'),
+                                        duration: Duration(seconds: 2),
+                                      ),
+                                    );
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text('Delete'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      icon: Icon(Icons.delete),
+                    ),
+                    leading: Checkbox(
+                      value: todos[i].isCompleted,
+                      onChanged: (value) {
+                        setState(() {
+                          todos[i].isCompleted = value!;
+                        });
+                      },
+                    ),
+                    title: Text(todos[i].title),
+                    subtitle: Text(todos[i].description),
+                  );
+                },
+                itemCount: todos.length,
+              ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showModalBottomSheet(
