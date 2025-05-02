@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/model/todo.dart';
+import 'package:flutter_application_1/second_page.dart';
 
 class Homescreenpage extends StatefulWidget {
   Homescreenpage({super.key});
@@ -118,6 +119,7 @@ class _HomescreenpageState extends State<Homescreenpage> {
                 },
                 itemCount: todos.length,
               ),
+
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showModalBottomSheet(
@@ -247,6 +249,35 @@ class _HomescreenpageState extends State<Homescreenpage> {
           );
         },
         child: const Icon(Icons.add),
+      ),
+      //add a new button to navigate at bottom navigator bar to the second page
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.next_plan), label: 'Next'),
+        ],
+        onTap: (index) async {
+          if (index == 1) {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AddTodoPage()),
+            );
+
+            if (result != null && result is Todo) {
+              setState(() {
+                todos.add(result);
+              });
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Todo added from second page'),
+                  backgroundColor: Colors.green,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            }
+          }
+        },
       ),
     );
   }
