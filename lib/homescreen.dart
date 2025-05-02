@@ -46,7 +46,80 @@ class _HomescreenpageState extends State<Homescreenpage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('To Do')),
+      appBar: AppBar(
+        title: const Text('To Do'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: Text('Delete All Todos'),
+                    content: Text('Are you sure you want to delete all todos?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            todos.clear();
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              backgroundColor: Colors.red,
+                              action: SnackBarAction(
+                                label: 'Undo',
+                                onPressed: () {},
+                              ),
+                              behavior: SnackBarBehavior.floating,
+                              content: Text('All todos deleted'),
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                          Navigator.pop(context);
+                        },
+                        child: Text('Delete All'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            icon: Icon(Icons.delete_forever),
+          ),
+          IconButton(
+            iconSize: 30,
+            onPressed: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AddTodoPage()),
+              );
+
+              if (result != null && result is Todo) {
+                setState(() {
+                  todos.add(result);
+                });
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Todo added from AppBar icon'),
+                    backgroundColor: Colors.green,
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              }
+            },
+            icon: Icon(Icons.add),
+          ),
+        ],
+
+        //add a button to navigate to the second page
+      ),
 
       body:
           todos.isEmpty
@@ -249,35 +322,6 @@ class _HomescreenpageState extends State<Homescreenpage> {
           );
         },
         child: const Icon(Icons.add),
-      ),
-      //add a new button to navigate at bottom navigator bar to the second page
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.next_plan), label: 'Next'),
-        ],
-        onTap: (index) async {
-          if (index == 1) {
-            final result = await Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AddTodoPage()),
-            );
-
-            if (result != null && result is Todo) {
-              setState(() {
-                todos.add(result);
-              });
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Todo added from second page'),
-                  backgroundColor: Colors.green,
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            }
-          }
-        },
       ),
     );
   }
