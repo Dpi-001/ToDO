@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/model/todo.dart';
 import 'package:flutter_application_1/second_page.dart';
+import 'package:dio/dio.dart';
 
 class Homescreenpage extends StatefulWidget {
   Homescreenpage({super.key});
@@ -10,6 +11,21 @@ class Homescreenpage extends StatefulWidget {
 }
 
 class _HomescreenpageState extends State<Homescreenpage> {
+  fetchTodos() async {
+    // Fetch todos from the server
+    // This is just a placeholder for the actual implementation
+    // You can use http package to fetch data from an API
+    //map ma vako laii model ma hunxw
+    final Dio dio = Dio();
+    final response = await dio.get(
+      "https://jsonplaceholder.typicode.com/todos",
+    );
+    for (var todo in response.data) {
+      todos.add(Todo.fromMap(todo));
+    }
+    return todos;
+  }
+
   final GlobalKey<FormState> _todoformKey = GlobalKey();
 
   String title = "";
@@ -125,74 +141,143 @@ class _HomescreenpageState extends State<Homescreenpage> {
           todos.isEmpty
               ? Center(
                 child: Text(
-                  'No todos available',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  'No todos yet!',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               )
-              : ListView.builder(
-                itemBuilder: (ctx, i) {
-                  return ListTile(
-                    trailing: IconButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: Text('Delete Todo'),
-                              content: Text(
-                                'Are you sure you want to delete this todo?',
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: Text('Cancel'),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      todos.remove(todos[i]);
-                                    });
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        backgroundColor: Colors.red,
-                                        action: SnackBarAction(
-                                          label: 'Undo',
-                                          onPressed: () {},
-                                        ),
-                                        behavior: SnackBarBehavior.floating,
+              : Column(
+                children: [
+                  Row(
+                    children: [
+                      ActionChip(
+                        label: Text(
+                          'All',
+                          style: TextStyle(
+                            color: Colors.white,
+                            backgroundColor: Colors.blue,
+                          ),
+                        ),
+                        onPressed: () {},
+                      ),
+                      ActionChip(
+                        label: Text('Completed'),
+                        onPressed: () {
+                          setState(() {
+                            todos.where((todo) => todo.isCompleted);
+                          });
+                        },
+                      ),
+                      ActionChip(
+                        label: Text('Pending'),
+                        onPressed: () {
+                          setState(() {
+                            todos.where((todo) => !todo.isCompleted);
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 200,
 
-                                        content: Text('Todo deleted'),
-                                        duration: Duration(seconds: 2),
-                                      ),
-                                    );
-                                    Navigator.pop(context);
-                                  },
-                                  child: Text('Delete'),
-                                ),
-                              ],
+                    child: FutureBuilder(
+                      future: fetchTodos(),
+                      builder: (ctx, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          if (snapshot.hasData) {
+                            return ListView.builder(
+                              itemBuilder: (ctx, i) {
+                                return ListTile(
+                                  trailing: IconButton(
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            title: Text('Delete Todo'),
+                                            content: Text(
+                                              'Are you sure you want to delete this todo?',
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text('Cancel'),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    todos.remove(todos[i]);
+                                                  });
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        'Todo deleted',
+                                                      ),
+                                                      backgroundColor:
+                                                          Colors.red,
+                                                      behavior:
+                                                          SnackBarBehavior
+                                                              .floating,
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              10,
+                                                            ),
+                                                      ),
+                                                      duration: Duration(
+                                                        seconds: 2,
+                                                      ),
+                                                    ),
+                                                  );
+
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text('Delete'),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    },
+                                    icon: Icon(Icons.delete),
+                                  ),
+                                  leading: Checkbox(
+                                    value: todos[i].isCompleted,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        todos[i].isCompleted = value!;
+                                      });
+                                    },
+                                  ),
+                                  title: Text(todos[i].title),
+                                  //double question mark diyera chai default value dinu parcha
+                                  // jaba description null huncha ni tyo value aaucha
+                                  //exclamatory mark also works but it will throw an error if the value is null
+                                  subtitle: Text(
+                                    todos[i].description ??
+                                        " No description provided",
+                                  ),
+                                );
+                              },
+                              itemCount: todos.length,
                             );
-                          },
-                        );
-                      },
-                      icon: Icon(Icons.delete),
-                    ),
-                    leading: Checkbox(
-                      value: todos[i].isCompleted,
-                      onChanged: (value) {
-                        setState(() {
-                          todos[i].isCompleted = value!;
-                        });
+                          } else if (snapshot.hasError) {
+                            return Center(child: Text("Error $snapshot.error"));
+                          } else {
+                            return Center(child: CircularProgressIndicator());
+                          }
+                        } else {
+                          return Center(child: CircularProgressIndicator());
+                        }
                       },
                     ),
-                    title: Text(todos[i].title),
-                    subtitle: Text(todos[i].description),
-                  );
-                },
-                itemCount: todos.length,
+                  ),
+                ],
               ),
-
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showModalBottomSheet(
