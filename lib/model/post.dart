@@ -2,8 +2,8 @@
 import 'dart:convert';
 
 class Post {
-  final String userId;
-  final String id;
+  final int userId;
+  final int id;
   final String title;
   final String body;
 
@@ -25,8 +25,8 @@ class Post {
 
   factory Post.fromMap(Map<String, dynamic> map) {
     return Post(
-      userId: map['userId'] as String,
-      id: map['id'] as String,
+      userId: map['userId'] as int,
+      id: map['id'] as int,
       title: map['title'] as String,
       body: map['body'] as String,
     );
