@@ -23,10 +23,17 @@ class _HomescreenpageState extends State<Homescreenpage> {
     for (var todo in response.data) {
       todos.add(Todo.fromMap(todo));
     }
-    return todos;
+    if (filter == "all") {
+      return todos;
+    } else if (filter == "completed") {
+      return todos.where((todo) => todo.isCompleted).toList();
+    } else if (filter == "pending") {
+      return todos.where((todo) => !todo.isCompleted).toList();
+    }
   }
 
   final GlobalKey<FormState> _todoformKey = GlobalKey();
+  String filter = "all";
 
   String title = "";
 
@@ -153,25 +160,56 @@ class _HomescreenpageState extends State<Homescreenpage> {
                         label: Text(
                           'All',
                           style: TextStyle(
-                            color: Colors.white,
-                            backgroundColor: Colors.blue,
+                            color:
+                                filter == "all" ? Colors.white : Colors.black,
                           ),
                         ),
-                        onPressed: () {},
-                      ),
-                      ActionChip(
-                        label: Text('Completed'),
+                        backgroundColor:
+                            filter == "all" ? Colors.blue : Colors.grey[300],
                         onPressed: () {
                           setState(() {
-                            todos.where((todo) => todo.isCompleted);
+                            filter = 'all';
                           });
                         },
                       ),
                       ActionChip(
-                        label: Text('Pending'),
+                        label: Text(
+                          'Completed',
+                          style: TextStyle(
+                            color:
+                                filter == "completed"
+                                    ? Colors.white
+                                    : Colors.black,
+                          ),
+                        ),
+                        backgroundColor:
+                            filter == "completed"
+                                ? Colors.blue
+                                : Colors.grey[300],
                         onPressed: () {
                           setState(() {
-                            todos.where((todo) => !todo.isCompleted);
+                            filter = 'completed';
+                          });
+                        },
+                      ),
+                      ActionChip(
+                        label: Text(
+                          'Pending',
+                          style: TextStyle(
+                            color:
+                                filter == "pending"
+                                    ? Colors.white
+                                    : Colors.black,
+                          ),
+                        ),
+                        backgroundColor:
+                            filter == "pending"
+                                ? Colors.blue
+                                : Colors.grey[300],
+
+                        onPressed: () {
+                          setState(() {
+                            filter = 'pending';
                           });
                         },
                       ),
@@ -185,6 +223,7 @@ class _HomescreenpageState extends State<Homescreenpage> {
                       builder: (ctx, snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) {
                           if (snapshot.hasData) {
+                            todos = snapshot.data as List<Todo>;
                             return ListView.builder(
                               itemBuilder: (ctx, i) {
                                 return ListTile(
