@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/app_routes.dart';
 import 'package:flutter_application_1/homescreen.dart';
+import 'package:flutter_application_1/post_view_screen.dart';
+import 'package:flutter_application_1/postscreen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,7 +19,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: Homescreenpage(), // Replace with your actual home screen widget
+      home: Postscreeneg(),
+      routes: {
+        AppRoutes.postScreen: (ctx) => Postscreeneg(),
+        AppRoutes.postViewScreen: (ctx) => postviewScreen(),
+      },
+      // Homescreenpage(), // Replace with your actual home screen widget
     );
   }
 }
