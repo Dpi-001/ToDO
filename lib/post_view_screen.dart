@@ -35,7 +35,24 @@ class _postviewScreenState extends State<postviewScreen> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {}
         if (snapshot.hasData) {
-          return Scaffold(appBar: AppBar(title: const Text('Post View')));
+          post = snapshot.data as Post;
+          return Scaffold(
+            appBar: AppBar(title: const Text('Post View')),
+            body: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    post!.title,
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 10),
+                  Text(post!.body, style: TextStyle(fontSize: 16)),
+                ],
+              ),
+            ),
+          );
         } else {
           return const Center(child: Text('No data found'));
         }
